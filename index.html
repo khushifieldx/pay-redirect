@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pay reimbursement</title>
+<style>
+body{font-family:system-ui,sans-serif;max-width:420px;margin:40px auto;padding:0 16px;text-align:center}
+.btn{display:block;width:100%;box-sizing:border-box;margin:16px 0;padding:16px;border-radius:8px;background:#1a73e8;color:#fff;text-decoration:none;font-size:18px;font-weight:600}
+.box{background:#f1f5f9;border-radius:8px;padding:12px;margin:16px 0;text-align:left;font-size:14px}
+.note{font-size:13px;color:#555;text-align:left}
+</style></head><body>
+<h2>Reimbursement payment</h2>
+<div class="box" id="details"></div>
+<a class="btn" id="gpay" href="#">Open Google Pay</a>
+<p class="note">In Google Pay, tap <b>Scan any QR code</b> and scan the employee QR image from Slack. Enter the amount shown above and pay.<br><br>
+After paying, return to Slack and click <b>Upload Screenshot &amp; Done</b>.</p>
+<script>
+(function(){
+  const ua = navigator.userAgent;
+  const pkg = "com.google.android.apps.nbu.paisa.user";
+  let url = "https://play.google.com/store/apps/details?id=" + pkg;
+  if (/android/i.test(ua)) url = "intent://upi/pay#Intent;scheme=tez;package=" + pkg + ";S.browser_fallback_url=" + encodeURIComponent(url) + ";end";
+  else if (/iphone|ipad|ipod/i.test(ua)) url = "gpay://";
+  document.getElementById("gpay").href = url;
+
+  const q = new URLSearchParams(location.search);
+  const pa = q.get("pa"), pn = q.get("pn") || "", am = q.get("am"), tn = q.get("tn") || "";
+  const esc = s => s.replace(/[&<>"]/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+  const box = document.getElementById("details");
+  if (pa && am) {
+    box.innerHTML = `<b>Pay to:</b> ${esc(pn)}<br><b>UPI ID:</b> ${esc(pa)}<br><b>Amount:</b> INR ${esc(am)}<br><b>Note:</b> ${esc(tn)}`;
+  } else {
+    box.style.display = "none";
+  }
+})();
+</script></body></html>
